@@ -3,7 +3,7 @@ from icalendar import Calendar
 
 # 1. URLs des flux iCalendar (exemples de liens d'abonnement officiels LNR / FFR)
 # Note : Il faut récupérer l'URL exacte du bouton "Ajouter au calendrier" sur le site de l'UBB et de la FFR
-URL_CALENDRIER_UBB = "https://exemple-lien-ical-ubb.ics" 
+URL_CALENDRIER_UBB = "https://outlook.office365.com/owa/calendar/37c08efc33d44ded957504f36cc15d21@ubbrugby.com/78982c22d7ef4797a377ffa2fde39a331268884149740782852/calendar.ics" 
 URL_CALENDRIER_XV_FRANCE = "https://exemple-lien-ical-ffr.ics"
 
 # Créer le calendrier final qui regroupera tout
