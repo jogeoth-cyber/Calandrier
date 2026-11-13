@@ -2,15 +2,14 @@ name: Mettre à jour le calendrier Rugby
 
 on:
   schedule:
-    # S'exécute tous les jours à 6h00 UTC
     - cron: '0 6 * * *'
-  workflow_dispatch: # Permet un lancement manuel depuis GitHub
+  workflow_dispatch:
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Autorise le script à sauvegarder le fichier sur le dépôt
+      contents: write
     steps:
       - name: Récupérer le code source
         uses: actions/checkout@v4
