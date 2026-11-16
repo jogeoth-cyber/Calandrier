@@ -446,7 +446,14 @@ def ajouter_matchs_au_calendrier(matchs, prefixe, source):
         event.add('dtstart', match['debut'])
         event.add('dtend', match['fin'])
         event.add('location', match['lieu'])
-        event.add('description', match.get('description', f"Source : {source}"))
+        description = match.get('description', f"Source : {source}")
+        diffusion_tv = match.get('diffusion_tv')
+        ligne_diffusion = (
+            f"Diffusion TV : {diffusion_tv}"
+            if diffusion_tv
+            else "Diffusion TV : non communiquée à ce jour (à confirmer)."
+        )
+        event.add('description', f"{description}\n{ligne_diffusion}")
         cal_final.add_component(event)
     return len(deja_ajoutes)
 
