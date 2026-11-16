@@ -4,6 +4,10 @@ from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 from icalendar import Calendar, Event
 import requests
+import urllib3
+
+# Désactiver l'avertissement SSL pour les sites aux certificats non standard
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Créer le calendrier final unifié
 cal_final = Calendar()
@@ -64,7 +68,8 @@ def extraire_matchs_page(url, nom_equipe):
     """Récupère les matchs d'une page calendrier (JSON-LD puis cartes HTML)."""
     matchs = []
     try:
-        reponse = requests.get(url, headers=HEADERS, timeout=15)
+        # Les sites ciblés utilisent parfois un certificat non standard ou auto-signé.
+        reponse = requests.get(url, headers=HEADERS, timeout=15, verify=False)
         if reponse.status_code != 200:
             print(f"Erreur HTTP {reponse.status_code} sur le site de {nom_equipe}")
             return matchs
