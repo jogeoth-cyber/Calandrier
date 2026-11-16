@@ -24,7 +24,7 @@ Si le lien ne lance pas Calendrier, copiez cette adresse HTTPS :
 
 Puis, sur les versions récentes d’iOS : **Réglages > Apps > Calendrier > Comptes Calendrier > Ajouter un compte > Autre > Ajouter un calendrier avec abonnement**. Collez l’adresse HTTPS dans le champ **Serveur**, puis validez. Sur les anciennes versions, le chemin commence par **Réglages > Calendrier > Comptes**.
 
-Le calendrier est public : les personnes disposant du lien peuvent consulter les rencontres. Un workflow GitHub actualise le fichier chaque jour vers 06:00 UTC ; Calendrier récupère ensuite les changements selon son propre rythme de synchronisation.
+Le calendrier est public : les personnes disposant du lien peuvent consulter les rencontres. Un workflow GitHub tente de régénérer le fichier chaque jour vers 06:00 UTC. Si la source FFR est inaccessible, la génération s’arrête sans remplacer le dernier calendrier publié ; le workflow réessaiera lors de son prochain passage. Calendrier récupère ensuite les changements selon son propre rythme de synchronisation.
 
 ## S’abonner avec d’autres applications
 
