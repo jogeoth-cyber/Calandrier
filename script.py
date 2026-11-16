@@ -10,114 +10,126 @@ cal_final = Calendar()
 cal_final.add('prodid', '-//Calendrier Rugby UBB & XV de France//FR')
 cal_final.add('version', '2.0')
 
-# En-têtes pour simuler un vrai navigateur et éviter d'être bloqué par la FFR
+# En-têtes pour simuler un vrai navigateur et éviter d'être bloqué par les sites
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 }
 
-# ==========================================
-# 1. RÉCUPÉRATION UBB (via flux .ics)
-# ==========================================
-URL_CALENDRIER_UBB = "https://outlook.office365.com/owa/calendar/37c08efc33d44ded957504f36cc15d21@ubbrugby.com/78982c22d7ef4797a377ffa2fde39a331268884149740782852/calendar.ics"  # Remplacez par le vrai lien .ics de l'UBB
 
-try:
-    reponse_ubb = requests.get(URL_CALENDRIER_UBB, headers=HEADERS, timeout=15)
-    if reponse_ubb.status_code == 200:
-        cal_ubb = Calendar.from_ical(reponse_ubb.text)
-        for composant in cal_ubb.walk():
-            if composant.name == "VEVENT":
-                titre = str(composant.get('summary'))
-                composant['summary'] = f"[UBB] {titre}"
-                cal_final.add_component(composant)
-        print("Matchs UBB ajoutés avec succès.")
-    else:
-        print(f"Erreur HTTP {reponse_ubb.status_code} pour l'UBB")
-except Exception as e:
-    print(f"Impossible de récupérer l'UBB : {e}")
+def extraire_evenements_jsonld(soup):
+    """Extrait les rencontres des données structurées SportsEvent, si présentes."""
+    evenements = []
+
+    def parcourir(data):
+        if isinstance(data, list):
+            for element in data:
+                parcourir(element)
+        elif isinstance(data, dict):
+            types = data.get('@type', [])
+            if isinstance(types, str):
+                types = [types]
+
+            if 'SportsEvent' in types:
+                date_str = data.get('startDate')
+                if date_str:
+                    try:
+                        debut = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+                        lieu = data.get('location', 'Stade à définir')
+                        if isinstance(lieu, dict):
+                            lieu = lieu.get('name', 'Stade à définir')
+                        evenements.append({
+                            'titre': data.get('name', 'Match'),
+                            'debut': debut,
+                            'fin': debut + timedelta(hours=2),
+                            'lieu': lieu
+                        })
+                    except (TypeError, ValueError):
+                        pass
+
+            # Les sites peuvent encapsuler leurs événements dans @graph ou d'autres objets.
+            for valeur in data.values():
+                if isinstance(valeur, (dict, list)):
+                    parcourir(valeur)
+
+    for script in soup.find_all('script', type='application/ld+json'):
+        try:
+            parcourir(json.loads(script.string or script.get_text()))
+        except (json.JSONDecodeError, TypeError):
+            continue
+
+    return evenements
+
+
+def extraire_matchs_page(url, nom_equipe):
+    """Récupère les matchs d'une page calendrier (JSON-LD puis cartes HTML)."""
+    matchs = []
+    try:
+        reponse = requests.get(url, headers=HEADERS, timeout=15)
+        if reponse.status_code != 200:
+            print(f"Erreur HTTP {reponse.status_code} sur le site de {nom_equipe}")
+            return matchs
+
+        soup = BeautifulSoup(reponse.text, 'html.parser')
+        matchs = extraire_evenements_jsonld(soup)
+
+        # Secours : lecture des cartes HTML si les données JSON-LD sont absentes.
+        if not matchs:
+            cartes = soup.find_all(['article', 'div', 'li'], class_=re.compile(r'match|rencontre|fixture|event', re.I))
+            for carte in cartes:
+                titre_el = carte.find(['h2', 'h3', 'h4'])
+                time_el = carte.find('time')
+                if not titre_el or not time_el or not time_el.get('datetime'):
+                    continue
+                try:
+                    debut = datetime.fromisoformat(time_el['datetime'].replace('Z', '+00:00'))
+                    matchs.append({
+                        'titre': titre_el.get_text(' ', strip=True),
+                        'debut': debut,
+                        'fin': debut + timedelta(hours=2),
+                        'lieu': 'Stade à définir'
+                    })
+                except ValueError:
+                    continue
+    except Exception as e:
+        print(f"Erreur lors de la récupération de {nom_equipe} : {e}")
+
+    return matchs
+
+
+def ajouter_matchs_au_calendrier(matchs, prefixe, source):
+    """Ajoute les matchs au calendrier en évitant les doublons."""
+    deja_ajoutes = set()
+    for match in matchs:
+        cle_unique = f"{match['titre']}_{match['debut'].strftime('%Y%m%d')}"
+        if cle_unique in deja_ajoutes:
+            continue
+        deja_ajoutes.add(cle_unique)
+        event = Event()
+        event.add('summary', f"[{prefixe}] {match['titre']}")
+        event.add('dtstart', match['debut'])
+        event.add('dtend', match['fin'])
+        event.add('location', match['lieu'])
+        event.add('description', f"Source : {source}")
+        cal_final.add_component(event)
+    return len(deja_ajoutes)
+
+
+# ==========================================
+# 1. RÉCUPÉRATION UBB (scraping du calendrier officiel)
+# ==========================================
+URL_UBB_MATCHS = "https://www.ubbrugby.com/equipes/equipe-premiere/calendrier-resultats.html"
+matchs_ubb = extraire_matchs_page(URL_UBB_MATCHS, 'UBB')
+nb_matchs_ubb = ajouter_matchs_au_calendrier(matchs_ubb, 'UBB', URL_UBB_MATCHS)
+print(f"{nb_matchs_ubb} matchs de l'UBB ajoutés.")
 
 
 # ==========================================
 # 2. RÉCUPÉRATION XV DE FRANCE (Scraping FFR)
 # ==========================================
 URL_FFR_MATCHS = "https://www.ffr.fr/equipe-de-france/rugby-a-xv/xv-de-france-masculin/rencontres"
-
-def extraire_matchs_ffr():
-    matchs_trouves = []
-    try:
-        reponse = requests.get(URL_FFR_MATCHS, headers=HEADERS, timeout=15)
-        if reponse.status_code != 200:
-            print(f"Erreur HTTP {reponse.status_code} sur le site de la FFR")
-            return matchs_trouves
-
-        soup = BeautifulSoup(reponse.text, 'html.parser')
-
-        # Méthode A : Rechercher les données structurées JSON-LD (très fiable quand présentes)
-        for script in soup.find_all('script', type='application/ld+json'):
-            try:
-                data = json.loads(script.string)
-                # Gérer le cas d'une liste ou d'un objet unique
-                items = data if isinstance(data, list) else [data]
-                for item in items:
-                    if item.get('@type') == 'SportsEvent':
-                        nom = item.get('name', 'Match XV de France')
-                        date_str = item.get('startDate')
-                        lieu = item.get('location', {}).get('name', 'Stade à définir')
-                        if date_str:
-                            dt_debut = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
-                            matchs_trouves.append({
-                                "titre": nom,
-                                "debut": dt_debut,
-                                "fin": dt_debut + timedelta(hours=2),
-                                "lieu": lieu
-                            })
-            except Exception:
-                continue
-
-        # Méthode B (Secours) : Lecture directe des cartes de matchs HTML si JSON-LD absent
-        if not matchs_trouves:
-            # Recherche des blocs contenant les rencontres sur la page FFR
-            cartes = soup.find_all(['article', 'div'], class_=re.compile(r'match|rencontre|fixture|event', re.I))
-            for carte in cartes:
-                texte = carte.get_text(" ", strip=True)
-                # Filtrer pour ne garder que les blocs contenant "France" et une date
-                if "France" in texte and re.search(r'\d{2}/\d{2}/\d{4}|\d{1,2}\s+[a-zéû]+\s+20\d{2}', texte, re.I):
-                    # Extraction basique du titre et de la date si la structure HTML est détectée
-                    titre_el = carte.find(['h2', 'h3', 'h4', 'a'])
-                    time_el = carte.find('time')
-                    if titre_el and time_el and time_el.has_attr('datetime'):
-                        try:
-                            dt_debut = datetime.fromisoformat(time_el['datetime'].replace('Z', '+00:00'))
-                            matchs_trouves.append({
-                                "titre": titre_el.get_text(strip=True),
-                                "debut": dt_debut,
-                                "fin": dt_debut + timedelta(hours=2),
-                                "lieu": "FFR / Stade officiel"
-                            })
-                        except ValueError:
-                            continue
-
-    except Exception as e:
-        print(f"Erreur lors du scraping FFR : {e}")
-
-    return matchs_trouves
-
-matchs_ffr = extraire_matchs_ffr()
-
-# Dédoublonnage et ajout au calendrier
-deja_ajoutes = set()
-for match in matchs_ffr:
-    cle_unique = f"{match['titre']}_{match['debut'].strftime('%Y%m%d')}"
-    if cle_unique not in deja_ajoutes:
-        deja_ajoutes.add(cle_unique)
-        event = Event()
-        event.add('summary', f"[XV de France] {match['titre']}")
-        event.add('dtstart', match['debut'])
-        event.add('dtend', match['fin'])
-        event.add('location', match['lieu'])
-        event.add('description', f"Source : {URL_FFR_MATCHS}")
-        cal_final.add_component(event)
-
-print(f"{len(deja_ajoutes)} matchs du XV de France ajoutés.")
+matchs_ffr = extraire_matchs_page(URL_FFR_MATCHS, 'la FFR')
+nb_matchs_ffr = ajouter_matchs_au_calendrier(matchs_ffr, 'XV de France', URL_FFR_MATCHS)
+print(f"{nb_matchs_ffr} matchs du XV de France ajoutés.")
 
 # ==========================================
 # 3. SAUVEGARDE DU FICHIER .ICS FINAL
