@@ -268,4 +268,13 @@ DESCRIPTION:Source : https://www.ubbrugby.com/application/uploads/calendar
  niquée à ce jour (à confirmer).
 LOCATION:Lieu à confirmer
 END:VEVENT
+BEGIN:VEVENT
+SUMMARY:[XV de France] France – Argentine – 21 novembre 2026
+DTSTART:20261121T211000
+DTEND:20261121T231000
+DESCRIPTION:Source : https://www.ffr.fr/equipe-de-france/rugby-a-xv/xv-de-
+ france-masculin/agenda\nDiffusion TV : non communiquée à ce jour (à con
+ firmer).
+LOCATION:SAINT-DENIS (STADE DE FRANCE)
+END:VEVENT
 END:VCALENDAR
