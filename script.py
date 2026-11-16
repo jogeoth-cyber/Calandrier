@@ -382,19 +382,18 @@ def extraire_matchs_ffr():
     try:
         reponse = requests.get(url_api, params=params, headers=HEADERS, timeout=15, verify=False)
         if reponse.status_code != 200:
-            print(f"Erreur HTTP {reponse.status_code} sur l'API de la FFR")
-            return []
+            raise requests.HTTPError(
+                f"Erreur HTTP {reponse.status_code} sur l'API de la FFR",
+                response=reponse
+            )
         evenements = reponse.json()
     except requests.RequestException as e:
-        print(f"Erreur lors de la récupération des matchs de la FFR : {e}")
-        return []
+        raise RuntimeError(f"Erreur lors de la récupération des matchs de la FFR : {e}") from e
     except ValueError as e:
-        print(f"Réponse JSON invalide de l'API FFR : {e}")
-        return []
+        raise RuntimeError(f"Réponse JSON invalide de l'API FFR : {e}") from e
 
     if not isinstance(evenements, list):
-        print("Réponse inattendue de l'API FFR : une liste de matchs était attendue.")
-        return []
+        raise RuntimeError("Réponse inattendue de l'API FFR : une liste de matchs était attendue.")
 
     matchs = []
     for evenement in evenements:
