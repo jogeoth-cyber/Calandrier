@@ -1,3 +1,3 @@
 # Calandrier
 
-Consultez le [guide d’abonnement au calendrier](GUIDE_ABONNEMENT_CALENDRIER.md) pour importer le fichier ICS ou vous abonner à une URL de calendrier hébergée.
+[S’abonner depuis un iPhone](webcal://raw.githubusercontent.com/jogeoth-cyber/Calandrier/main/calendrier_ubb_xv_france.ics) · [Guide d’abonnement](GUIDE_ABONNEMENT_CALENDRIER.md)

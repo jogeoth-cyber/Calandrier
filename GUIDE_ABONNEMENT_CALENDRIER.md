@@ -12,17 +12,27 @@ L’import ajoute une copie des événements présents dans le fichier au moment
 
 Après une nouvelle génération du fichier, réimportez-le si vous souhaitez actualiser cette copie. Selon l’application, les événements déjà importés peuvent être dupliqués ; il peut être préférable de supprimer l’ancien calendrier importé avant de recommencer.
 
-## S’abonner avec mise à jour automatique
+## S’abonner depuis un iPhone
 
-Pour que les modifications soient récupérées, le fichier ICS doit être publié à une adresse HTTPS stable, accessible depuis l’application de calendrier. Le fichier présent sur votre ordinateur ou dans ce dépôt ne constitue pas, à lui seul, une adresse d’abonnement synchronisée. Ce projet ne publie pas actuellement le calendrier à une telle adresse.
+Le calendrier est publié sur GitHub à une adresse stable. Touchez ce lien depuis l’iPhone pour ouvrir l’abonnement dans Calendrier :
 
-Une fois le fichier hébergé et son URL HTTPS disponible :
+**[S’abonner au calendrier UBB et XV de France](webcal://raw.githubusercontent.com/jogeoth-cyber/Calandrier/main/calendrier_ubb_xv_france.ics)**
 
-- **Google Agenda** : dans **Autres agendas**, choisissez **À partir de l’URL**, collez l’adresse HTTPS du fichier ICS, puis ajoutez le calendrier.
+Si le lien ne lance pas Calendrier, copiez cette adresse HTTPS :
+
+`https://raw.githubusercontent.com/jogeoth-cyber/Calandrier/main/calendrier_ubb_xv_france.ics`
+
+Puis, sur les versions récentes d’iOS : **Réglages > Apps > Calendrier > Comptes Calendrier > Ajouter un compte > Autre > Ajouter un calendrier avec abonnement**. Collez l’adresse HTTPS dans le champ **Serveur**, puis validez. Sur les anciennes versions, le chemin commence par **Réglages > Calendrier > Comptes**.
+
+Le calendrier est public : les personnes disposant du lien peuvent consulter les rencontres. Un workflow GitHub actualise le fichier chaque jour vers 06:00 UTC ; Calendrier récupère ensuite les changements selon son propre rythme de synchronisation.
+
+## S’abonner avec d’autres applications
+
+- **Google Agenda** : dans **Autres agendas**, choisissez **À partir de l’URL**, collez l’adresse HTTPS ci-dessus, puis ajoutez le calendrier.
 - **Outlook** : utilisez l’ajout d’un calendrier à partir d’Internet ou d’une URL, puis collez l’adresse HTTPS.
-- **Apple Calendrier** : choisissez **Fichier > Nouvel abonnement au calendrier…**, puis collez l’adresse HTTPS.
+- **Apple Calendrier sur Mac** : choisissez **Fichier > Nouvel abonnement au calendrier…**, puis collez l’adresse HTTPS.
 
-Le rafraîchissement dépend ensuite de l’application et de son rythme de synchronisation. Une URL commençant par `webcal://` peut également être acceptée par certaines applications, mais l’adresse doit pointer vers un calendrier maintenu à jour.
+Un import du fichier ICS local est une copie ponctuelle et ne se met pas automatiquement à jour. Pour profiter des mises à jour, abonnez-vous à l’adresse ci-dessus.
 
 ## Chaînes TV
 
