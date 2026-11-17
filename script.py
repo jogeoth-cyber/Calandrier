@@ -370,17 +370,46 @@ def fusionner_matchs_ubb(matchs_pdf, matchs_precis):
 
 
 def extraire_matchs_ffr():
-    """Récupère les prochains matchs du XV de France via l'API officielle FFR."""
+    """Récupère les matchs de la saison affichée dans l'agenda officiel FFR."""
+    url_saisons = "https://api.www.ffr.fr/static/saisons_xv-de-france-masculin.json"
     url_api = "https://api.www.ffr.fr/wp-json/ffr/v1/rencontres_itl"
-    aujourd_hui = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    params = {
-        'start_date': aujourd_hui.isoformat(timespec='seconds'),
-        'equipe': 'xv-de-france-masculin',
-        'per_page': 300
+    headers_ffr = {
+        **HEADERS,
+        'Origin': 'https://www.ffr.fr',
+        'Referer': URL_FFR_MATCHS
     }
 
     try:
-        reponse = requests.get(url_api, params=params, headers=HEADERS, timeout=15, verify=False)
+        reponse_saisons = requests.get(
+            url_saisons,
+            headers=headers_ffr,
+            timeout=15,
+            verify=False
+        )
+        if reponse_saisons.status_code != 200:
+            raise requests.HTTPError(
+                f"Erreur HTTP {reponse_saisons.status_code} sur les saisons de la FFR",
+                response=reponse_saisons
+            )
+        saisons = reponse_saisons.json()
+        if not isinstance(saisons, list) or not saisons or not isinstance(saisons[-1], dict):
+            raise RuntimeError("Réponse inattendue de la FFR : saison courante introuvable.")
+
+        params = {
+            'equipe': 'xv-de-france-masculin',
+            'season': saisons[-1].get('id'),
+            'per_page': 300
+        }
+        if params['season'] is None:
+            raise RuntimeError("Réponse inattendue de la FFR : identifiant de saison manquant.")
+
+        reponse = requests.get(
+            url_api,
+            params=params,
+            headers=headers_ffr,
+            timeout=15,
+            verify=False
+        )
         if reponse.status_code != 200:
             raise requests.HTTPError(
                 f"Erreur HTTP {reponse.status_code} sur l'API de la FFR",
