@@ -2,30 +2,33 @@ BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Calendrier Rugby UBB & XV de France//FR
 BEGIN:VEVENT
-SUMMARY:[UBB] Union Bordeaux Bègles Rugby - Montpellier
-DTSTART:20261128T143000
-DTEND:20261128T163000
-DESCRIPTION:Source : https://www.ubbrugby.com/equipes/equipe-premiere/cale
- ndrier-resultats.html\nDiffusion TV : non communiquée à ce jour (à conf
- irmer).
+SUMMARY:[UBB] Match UBB - J10
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261130
+DESCRIPTION:Source : https://www.ubbrugby.com/application/uploads/calendar
+ /calendrier-a3_saison2627.pdf\nLe jour et l'horaire précis seront communi
+ qués au plus tard deux semaines avant le match.\nDiffusion TV : non commu
+ niquée à ce jour (à confirmer).
 LOCATION:Stade Chaban-Delmas
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:[UBB] Toulon - Union Bordeaux Bègles Rugby
-DTSTART:20261206T210500
-DTEND:20261206T230500
-DESCRIPTION:Source : https://www.ubbrugby.com/equipes/equipe-premiere/cale
- ndrier-resultats.html\nDiffusion TV : non communiquée à ce jour (à conf
- irmer).
-LOCATION:Stade Félix Mayol
+SUMMARY:[UBB] Match UBB - J11
+DTSTART;VALUE=DATE:20261205
+DTEND;VALUE=DATE:20261207
+DESCRIPTION:Source : https://www.ubbrugby.com/application/uploads/calendar
+ /calendrier-a3_saison2627.pdf\nLe jour et l'horaire précis seront communi
+ qués au plus tard deux semaines avant le match.\nDiffusion TV : non commu
+ niquée à ce jour (à confirmer).
+LOCATION:À l'extérieur (stade à confirmer)
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:[UBB] Union Bordeaux Bègles Rugby - Stormers
-DTSTART:20261213T161500
-DTEND:20261213T181500
-DESCRIPTION:Source : https://www.ubbrugby.com/equipes/equipe-premiere/cale
- ndrier-resultats.html\nDiffusion TV : non communiquée à ce jour (à conf
- irmer).
+SUMMARY:[UBB] Match UBB - J2
+DTSTART;VALUE=DATE:20261213
+DTEND;VALUE=DATE:20261214
+DESCRIPTION:Source : https://www.ubbrugby.com/application/uploads/calendar
+ /calendrier-a3_saison2627.pdf\nLe jour et l'horaire précis seront communi
+ qués au plus tard deux semaines avant le match.\nDiffusion TV : non commu
+ niquée à ce jour (à confirmer).
 LOCATION:Stade Chaban-Delmas
 END:VEVENT
 BEGIN:VEVENT
@@ -269,6 +272,15 @@ DESCRIPTION:Source : https://www.ubbrugby.com/application/uploads/calendar
 LOCATION:Lieu à confirmer
 END:VEVENT
 BEGIN:VEVENT
+SUMMARY:[XV de France] Angleterre – France – 14 février 2027
+DTSTART:20270214T161000
+DTEND:20270214T181000
+DESCRIPTION:Source : https://www.ffr.fr/equipe-de-france/rugby-a-xv/xv-de-
+ france-masculin/agenda\nDiffusion TV : non communiquée à ce jour (à con
+ firmer).
+LOCATION:Londres (Twickenham)
+END:VEVENT
+BEGIN:VEVENT
 SUMMARY:[XV de France] France – Argentine – 21 novembre 2026
 DTSTART:20261121T211000
 DTEND:20261121T231000
@@ -276,5 +288,14 @@ DESCRIPTION:Source : https://www.ffr.fr/equipe-de-france/rugby-a-xv/xv-de-
  france-masculin/agenda\nDiffusion TV : non communiquée à ce jour (à con
  firmer).
 LOCATION:SAINT-DENIS (STADE DE FRANCE)
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:[XV de France] France – Pays de Galles – 06 février 2027
+DTSTART:20270206T174000
+DTEND:20270206T194000
+DESCRIPTION:Source : https://www.ffr.fr/equipe-de-france/rugby-a-xv/xv-de-
+ france-masculin/agenda\nDiffusion TV : non communiquée à ce jour (à con
+ firmer).
+LOCATION:Saint-DEnis (stade de france)
 END:VEVENT
 END:VCALENDAR
